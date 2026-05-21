@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1A3C5E">
+<meta name="description" content="Реабилитационный планировщик для пациенток с лимфостазом и тугоподвижностью">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RehabPlan">
+<link rel="manifest" href="manifest.json">
+<title>RehabPlan — Visbody</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+  --c-blue: #1A3C5E;
+  --c-blue-light: #E8F4FD;
+  --c-blue-mid: #378ADD;
+  --c-green: #1D6A4A;
+  --c-green-light: #E8F5EE;
+  --c-purple: #534AB7;
+  --c-purple-light: #EEEDFE;
+  --c-teal: #0F6E56;
+  --c-teal-light: #E1F5EE;
+  --c-amber: #B8690A;
+  --c-amber-light: #FEF3E2;
+  --c-red: #A32D2D;
+  --c-red-light: #FCEBEB;
+  --c-gray: #F5F5F3;
+  --c-gray-mid: #E8E8E4;
+  --c-text: #1C1C1A;
+  --c-text-muted: #6B6B67;
+  --c-text-light: #9B9B97;
+  --c-border: rgba(0,0,0,0.1);
+  --c-border-strong: rgba(0,0,0,0.18);
+  --c-bg: #FAFAF8;
+  --c-surface: #FFFFFF;
+  --radius: 10px;
+  --radius-lg: 14px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 2px 12px rgba(0,0,0,0.1);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-blue: #7BB8F0;
+    --c-blue-light: #0D2033;
+    --c-blue-mid: #5A9FE0;
+    --c-green: #5BC99A;
+    --c-green-light: #0D2A1E;
+    --c-purple: #9B94E8;
+    --c-purple-light: #1A1840;
+    --c-teal: #4ECBA8;
+    --c-teal-light: #082B22;
+    --c-amber: #F5A623;
+    --c-amber-light: #2A1A00;
+    --c-red: #E57373;
+    --c-red-light: #2A0D0D;
+    --c-gray: #1E1E1C;
+    --c-gray-mid: #2A2A28;
+    --c-text: #EAEAE6;
+    --c-text-muted: #9B9B97;
+    --c-text-light: #6B6B67;
+    --c-border: rgba(255,255,255,0.1);
+    --c-border-strong: rgba(255,255,255,0.18);
+    --c-bg: #141412;
+    --c-surface: #1E1E1C;
+    --shadow: 0 1px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 2px 12px rgba(0,0,0,0.4);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--c-bg);color:var(--c-text);min-height:100vh;line-height:1.5}
+.app-shell{display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--c-surface);border-bottom:1px solid var(--c-border);padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
+.topbar-logo{font-size:17px;font-weight:700;color:var(--c-blue);letter-spacing:-0.3px}
+.topbar-sub{font-size:13px;color:var(--c-text-muted)}
+.topbar-back{display:none;align-items:center;gap:6px;font-size:15px;color:var(--c-blue-mid);cursor:pointer;background:none;border:none;padding:6px 0}
+.topbar-back i{font-size:18px}
+.content{flex:1;max-width:680px;margin:0 auto;width:100%;padding:20px 16px 80px}
+.card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.section-title{font-size:13px;font-weight:600;color:var(--c-text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.section-title i{font-size:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}.grid3{grid-template-columns:1fr 1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;color:var(--c-text-muted)}
+.field input,.field select,.field textarea{
+  font-size:15px;padding:9px 12px;border:1px solid var(--c-border-strong);
+  border-radius:var(--radius);background:var(--c-surface);color:var(--c-text);
+  width:100%;outline:none;transition:border-color .15s;-webkit-appearance:none;appearance:none
+}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%236B6B67'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--c-blue-mid)}
+.field textarea{min-height:72px;resize:vertical;font-family:inherit}
+.divider{border:none;border-top:1px solid var(--c-border);margin:14px 0}
+.toggle-group{display:flex;flex-wrap:wrap;gap:6px}
+.tbtn{border:1px solid var(--c-border-strong);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;background:var(--c-surface);color:var(--c-text);transition:all .15s;user-select:none;line-height:1.3}
+.tbtn.on{background:var(--c-blue-light);border-color:var(--c-blue-mid);color:var(--c-blue)}
+.tbtn.contra-on{background:var(--c-red-light);border-color:var(--c-red);color:var(--c-red)}
+.tab-row{display:flex;border-bottom:1px solid var(--c-border);margin-bottom:14px}
+.tab{padding:8px 16px;font-size:14px;cursor:pointer;border-bottom:2px solid transparent;color:var(--c-text-muted);white-space:nowrap}
+.tab.active{border-bottom-color:var(--c-blue-mid);color:var(--c-blue-mid);font-weight:600}
+.upload-zone{border:2px dashed var(--c-border-strong);border-radius:var(--radius-lg);padding:24px 16px;text-align:center;cursor:pointer;transition:background .15s}
+.upload-zone:hover,.upload-zone:active{background:var(--c-gray)}
+.upload-zone i{font-size:32px;color:var(--c-text-muted);display:block;margin-bottom:8px}
+.upload-zone p{font-size:14px;color:var(--c-text-muted)}
+.upload-zone small{font-size:12px;color:var(--c-text-light)}
+.mc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.mchip{background:var(--c-gray);border-radius:var(--radius);padding:8px 10px}
+.mchip .mv{font-size:15px;font-weight:600}
+.mchip .ml{font-size:11px;color:var(--c-text-muted);margin-top:1px}
+.mchip.warn .mv{color:var(--c-amber)}
+.mchip.ok .mv{color:var(--c-green)}
+.mchip.low .mv{color:var(--c-red)}
+.btn-primary{background:var(--c-blue);color:#fff;border:none;border-radius:var(--radius-lg);padding:14px 20px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:10px;width:100%;justify-content:center;transition:opacity .15s;-webkit-appearance:none}
+.btn-primary:hover{opacity:.9}
+.btn-primary:active{opacity:.8;transform:scale(0.99)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-secondary{background:var(--c-surface);border:1px solid var(--c-border-strong);border-radius:var(--radius);padding:8px 16px;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px;color:var(--c-text);white-space:nowrap}
+.btn-secondary:hover{background:var(--c-gray)}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.spinner{width:20px;height:20px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.warn-box{background:var(--c-amber-light);border:1px solid var(--c-amber);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--c-amber);display:flex;gap:8px;margin-bottom:14px}
+.danger-box{background:var(--c-red-light);border:1px solid var(--c-red);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--c-red);display:flex;gap:8px;margin-bottom:14px}
+.sum-card{background:var(--c-blue-light);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:14px 16px;font-size:14px;line-height:1.7;color:var(--c-text);margin-bottom:14px}
+.rsec{margin-bottom:20px}
+.rsec-header{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px;padding:0 2px}
+.ri{border-radius:var(--radius);border:1px solid var(--c-border);padding:12px 14px;margin-bottom:8px;font-size:14px;line-height:1.55;background:var(--c-surface)}
+.ri strong{font-weight:600;display:block;margin-bottom:4px;font-size:14px}
+.ri .desc{color:var(--c-text-muted);font-size:13px;line-height:1.55}
+.ri .meta{margin-top:8px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--c-text-light)}
+.ri .meta span{display:flex;align-items:center;gap:4px}
+.ri .rat{margin-top:6px;font-size:12px;color:var(--c-text-light);font-style:italic}
+.ri .params{background:var(--c-gray);border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;display:inline-block;margin:4px 0;font-family:monospace;letter-spacing:0.02em}
+.ri.lfc{border-left:3px solid #1D6A4A}
+.ri.lymph{border-left:3px solid #185FA5}
+.ri.phys{border-left:3px solid #534AB7}
+.ri.mech{border-left:3px solid #0F6E56}
+.step-badge{display:flex;align-items:center;gap:10px;margin-bottom:14px;margin-top:4px}
+.step-n{width:30px;height:30px;border-radius:50%;background:var(--c-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.step-label{font-size:17px;font-weight:700}
+.sched-card{background:var(--c-surface);border:1px solid var(--c-border);border-radius:var(--radius-lg);padding:14px 16px;font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--c-text)}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--c-surface);border-top:1px solid var(--c-border);padding:12px 16px;display:none}
+.install-prompt{background:var(--c-blue-light);border:1px solid var(--c-blue-mid);border-radius:var(--radius-lg);padding:12px 14px;display:flex;align-items:center;gap:12px;font-size:13px;margin-bottom:12px}
+.install-prompt i{font-size:24px;color:var(--c-blue-mid);flex-shrink:0}
+.install-prompt strong{font-weight:600;display:block;font-size:14px}
+.install-prompt .ip-btn{margin-left:auto;background:var(--c-blue-mid);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+#pdf-status{margin-top:10px;font-size:13px;color:var(--c-text-muted);padding:0 2px}
+@media print{
+  .topbar{display:none!important}
+  .action-row{display:none!important}
+  .bottom-bar{display:none!important}
+  .app-shell{display:block}
+  .content{padding:0;max-width:100%}
+  .card{box-shadow:none;border:1px solid #ddd}
+  .btn-primary,.btn-secondary{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+<div class="topbar">
+  <button class="topbar-back" id="back-btn" onclick="goBack()">
+    <i class="ti ti-arrow-left"></i> Назад
+  </button>
+  <div>
+    <div class="topbar-logo">RehabPlan</div>
+    <div class="topbar-sub" id="topbar-sub">Visbody → Комплекс реабилитации</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- INSTALL PROMPT -->
+<div class="install-prompt" id="install-prompt" style="display:none">
+  <i class="ti ti-device-mobile"></i>
+  <div><strong>Добавить на главный экран</strong>Работает как приложение без браузера</div>
+  <button class="ip-btn" onclick="doInstall()">Установить</button>
+</div>
+
+<!-- PAGE: INPUT -->
+<div id="pg-input">
+
+<div class="step-badge"><div class="step-n">1</div><div class="step-label">Данные Visbody</div></div>
+<div class="card">
+  <div class="tab-row">
+    <div class="tab active" id="t-manual" onclick="swTab('manual')">Ввести вручную</div>
+    <div class="tab" id="t-pdf" onclick="swTab('pdf')">Загрузить PDF</div>
+  </div>
+  <div id="pn-manual">
+    <div class="section-title"><i class="ti ti-body-scan"></i>Состав тела</div>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="field"><label>Вес (кг)</label><input type="number" id="vw" placeholder="54.8" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>ИМТ</label><input type="number" id="vb" placeholder="17.9" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Жир % (BFP)</label><input type="number" id="vf" placeholder="17.2" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Мышцы (кг)</label><input type="number" id="vm" placeholder="41.8" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Висц. жир</label><input type="number" id="vv" placeholder="3" step="1" inputmode="numeric"></div>
+      <div class="field"><label>ECW/TBW</label><input type="number" id="ve" placeholder="0.379" step="0.001" inputmode="decimal"></div>
+    </div>
+    <div class="divider"></div>
+    <div class="section-title"><i class="ti ti-scan-eye"></i>Осанка и функция плеч</div>
+    <div class="grid2" style="margin-bottom:10px">
+      <div class="field"><label>Выдвижение головы (см)</label><input type="number" id="vh" placeholder="4.1" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Антеролистез таза (см)</label><input type="number" id="vp" placeholder="7.6" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Перекос плеч (°)</label><input type="number" id="vs" placeholder="-3.9" step="0.1" inputmode="decimal"></div>
+      <div class="field"><label>Угол ноги (°, норма 180)</label><input type="number" id="vl" placeholder="177.4" step="0.1" inputmode="decimal"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Ротация плеча лев. (°)</label><input type="number" id="vsl" placeholder="139" step="1" inputmode="numeric"></div>
+      <div class="field"><label>Ротация плеча пр. (°)</label><input type="number" id="vsr" placeholder="136" step="1" inputmode="numeric"></div>
+    </div>
+  </div>
+  <div id="pn-pdf" style="display:none">
+    <div class="upload-zone" onclick="document.getElementById('pf').click()">
+      <i class="ti ti-file-text"></i>
+      <p>Нажмите, чтобы выбрать PDF Visbody</p>
+      <small>Состав тела + Осанка + Функция плеч</small>
+      <input type="file" id="pf" accept=".pdf" style="display:none" onchange="doPDF(this)">
+    </div>
+    <div id="pdf-status"></div>
+    <div id="pdf-chips" class="mc-grid" style="display:none"></div>
+  </div>
+</div>
+
+<div class="step-badge" style="margin-top:16px"><div class="step-n">2</div><div class="step-label">Клинические данные</div></div>
+<div class="card">
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="field"><label>Фамилия И.О. (опционально)</label><input type="text" id="cname" placeholder="Иванова А.Б." autocomplete="off"></div>
+    <div class="field"><label>Возраст (лет)</label><input type="number" id="cage" placeholder="45" step="1" inputmode="numeric"></div>
+  </div>
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="field">
+      <label>Основной диагноз</label>
+      <select id="cdiag">
+        <option value="">— выберите —</option>
+        <option value="lymph-upper">Лимфостаз верхних конечностей (постмастэктомия)</option>
+        <option value="stiff-joint">Тугоподвижность суставов без лимфостаза</option>
+        <option value="lymph-stiff">Лимфостаз + тугоподвижность</option>
+        <option value="lymph-lower">Лимфостаз нижних конечностей</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Стадия лимфостаза</label>
+      <select id="cstage">
+        <option value="na">Нет / не применимо</option>
+        <option value="1">I — преходящий отёк</option>
+        <option value="2">II — стойкий отёк</option>
+        <option value="3">III — слоновость</option>
+      </select>
+    </div>
+  </div>
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="field">
+      <label>Локализация поражения</label>
+      <select id="cloc">
+        <option value="right-arm">Правая рука</option>
+        <option value="left-arm">Левая рука</option>
+        <option value="both-arms">Обе руки</option>
+        <option value="right-leg">Правая нога</option>
+        <option value="left-leg">Левая нога</option>
+        <option value="both-legs">Обе ноги</option>
+        <option value="shoulder">Плечевой сустав</option>
+        <option value="knee">Коленный сустав</option>
+        <option value="other">Другое</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Период после лечения</label>
+      <select id="cper">
+        <option value="acute">Острый (до 3 мес.)</option>
+        <option value="subacute">Подострый (3–12 мес.)</option>
+        <option value="chronic">Хронический (&gt;12 мес.)</option>
+      </select>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="section-title" style="margin-bottom:8px"><i class="ti ti-building-hospital"></i>Доступное оборудование</div>
+  <div class="toggle-group" id="eq-g" style="margin-bottom:14px">
+    <div class="tbtn on" data-v="pneumo" onclick="togEq(this)">Пневмокомпрессия</div>
+    <div class="tbtn on" data-v="laser" onclick="togEq(this)">Лазер (рлазер)</div>
+    <div class="tbtn on" data-v="nchmt" onclick="togEq(this)">НЧМТ</div>
+    <div class="tbtn on" data-v="mld" onclick="togEq(this)">Мануальный лимфодренаж</div>
+    <div class="tbtn on" data-v="gym" onclick="togEq(this)">Зал ЛФК</div>
+    <div class="tbtn on" data-v="mechanotherapy" onclick="togEq(this)">Механотерапия (блок/блоковые тренажёры)</div>
+    <div class="tbtn" data-v="pool" onclick="togEq(this)">Бассейн / гидрокинез</div>
+    <div class="tbtn" data-v="bandage" onclick="togEq(this)">Компрессионный бандаж</div>
+  </div>
+  <div class="section-title" style="margin-bottom:8px"><i class="ti ti-alert-triangle"></i>Противопоказания</div>
+  <div class="toggle-group" id="ct-g">
+    <div class="tbtn" data-v="onco-active" onclick="togCt(this)">Активный онкопроцесс</div>
+    <div class="tbtn" data-v="thrombosis" onclick="togCt(this)">Тромбоз / ТЭЛА</div>
+    <div class="tbtn" data-v="infection" onclick="togCt(this)">Рожистое воспаление</div>
+    <div class="tbtn" data-v="cardiac" onclick="togCt(this)">СН IIб–III</div>
+    <div class="tbtn" data-v="renal" onclick="togCt(this)">ХБП III–V</div>
+    <div class="tbtn" data-v="implant" onclick="togCt(this)">Металлоконструкции (зона)</div>
+    <div class="tbtn" data-v="pacemaker" onclick="togCt(this)">Кардиостимулятор</div>
+    <div class="tbtn" data-v="hypertension" onclick="togCt(this)">АГ ≥180/110</div>
+  </div>
+  <div class="divider"></div>
+  <div class="field">
+    <label>Дополнительно: боль, сопутствующие заболевания, жалобы</label>
+    <textarea id="cnotes" placeholder="Например: боль в плечевом суставе 5/10, диабет 2 типа, принимает антикоагулянты..."></textarea>
+  </div>
+</div>
+
+<button class="btn-primary" id="gen-btn" onclick="doGenerate()">
+  <i class="ti ti-sparkles"></i>
+  Сформировать комплекс
+</button>
+</div>
+
+<!-- PAGE: RESULT -->
+<div id="pg-result" style="display:none">
+  <div class="warn-box">
+    <i class="ti ti-alert-triangle"></i>
+    <span>Рекомендательный характер. Окончательное назначение — за врачом-реабилитологом.</span>
+  </div>
+  <div id="danger-alert" style="display:none" class="danger-box">
+    <i class="ti ti-ban"></i>
+    <span id="danger-text"></span>
+  </div>
+  <div id="r-summary" class="sum-card" style="display:none"></div>
+  <div id="r-body"></div>
+  <div class="action-row">
+    <button class="btn-secondary" onclick="doPrint()"><i class="ti ti-printer"></i>Печать</button>
+    <button class="btn-secondary" id="word-btn" onclick="doWord()"><i class="ti ti-file-word"></i>Скачать Word</button>
+  </div>
+  <div style="height:16px"></div>
+</div>
+
+</div><!-- /content -->
+</div><!-- /app-shell -->
+
+<script src="https://unpkg.com/docx@8.5.0/build/index.js"></script>
+<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+<script>
+// ── State ──────────────────────────────────────────────────────────────
+let activeTab='manual';
+let eqSet=new Set(['pneumo','laser','nchmt','mld','gym','mechanotherapy']);
+let ctSet=new Set();
+let parsedVB={};
+let lastPlan=null;
+let lastMeta={};
+let deferredInstall=null;
+
+// ── PWA ───────────────────────────────────────────────────────────────
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); deferredInstall=e;
+  document.getElementById('install-prompt').style.display='flex';
+});
+function doInstall(){
+  if(!deferredInstall)return;
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(()=>{ document.getElementById('install-prompt').style.display='none'; deferredInstall=null; });
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────
+function swTab(t){
+  activeTab=t;
+  ['manual','pdf'].forEach(x=>{
+    document.getElementById('t-'+x).classList.toggle('active',x===t);
+    document.getElementById('pn-'+x).style.display=x===t?'':'none';
+  });
+}
+
+// ── Toggles ───────────────────────────────────────────────────────────
+function togEq(el){ el.classList.toggle('on'); const v=el.dataset.v; eqSet.has(v)?eqSet.delete(v):eqSet.add(v); }
+function togCt(el){ el.classList.toggle('contra-on'); const v=el.dataset.v; ctSet.has(v)?ctSet.delete(v):ctSet.add(v); }
+
+// ── PDF parse ─────────────────────────────────────────────────────────
+async function doPDF(inp){
+  const f=inp.files[0]; if(!f)return;
+  const st=document.getElementById('pdf-status');
+  st.textContent='Читаем PDF...';
+  const reader=new FileReader();
+  reader.onload=async function(e){
+    const b64=e.target.result.split(',')[1];
+    st.textContent='ИИ извлекает показатели Visbody...';
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+          messages:[{role:'user',content:[
+            {type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}},
+            {type:'text',text:'Из отчёта Visbody извлеки числа и верни ТОЛЬКО JSON без markdown: {"weight":null,"bmi":null,"bfp":null,"muscle":null,"visceral":null,"ecw_tbw":null,"head_forward":null,"pelvis":null,"shoulder_sym":null,"leg_angle":null,"shoulder_rot_left":null,"shoulder_rot_right":null}'}
+          ]}]})});
+      const d=await r.json();
+      const txt=d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+      parsedVB=JSON.parse(txt);
+      st.textContent='✓ Данные успешно извлечены';
+      renderChips(parsedVB);
+    }catch(e){ st.textContent='Не удалось распознать PDF. Введите данные вручную.'; }
+  };
+  reader.readAsDataURL(f);
+}
+function renderChips(d){
+  const el=document.getElementById('pdf-chips'); el.style.display='grid';
+  const flds=[['weight','Вес, кг',null,null],['bmi','ИМТ',18.5,24.9],['bfp','Жир %',10,30],['muscle','Мышцы, кг',null,null],['visceral','Висц. жир',1,10],['ecw_tbw','ECW/TBW',0.36,0.39]];
+  el.innerHTML=flds.map(([k,l,lo,hi])=>{
+    const v=d[k]; if(v==null)return'';
+    let cls=''; if(lo!=null&&hi!=null) cls=v<lo?'low':v>hi?'warn':'ok';
+    return`<div class="mchip ${cls}"><div class="mv">${v}</div><div class="ml">${l}</div></div>`;
+  }).join('');
+}
+function getVB(){
+  if(activeTab==='pdf'&&Object.keys(parsedVB).length>0)return parsedVB;
+  return{
+    weight:parseFloat(document.getElementById('vw').value)||null,
+    bmi:parseFloat(document.getElementById('vb').value)||null,
+    bfp:parseFloat(document.getElementById('vf').value)||null,
+    muscle:parseFloat(document.getElementById('vm').value)||null,
+    visceral:parseFloat(document.getElementById('vv').value)||null,
+    ecw_tbw:parseFloat(document.getElementById('ve').value)||null,
+    head_forward:parseFloat(document.getElementById('vh').value)||null,
+    pelvis:parseFloat(document.getElementById('vp').value)||null,
+    shoulder_sym:parseFloat(document.getElementById('vs').value)||null,
+    leg_angle:parseFloat(document.getElementById('vl').value)||null,
+    shoulder_rot_left:parseFloat(document.getElementById('vsl').value)||null,
+    shoulder_rot_right:parseFloat(document.getElementById('vsr').value)||null,
+  };
+}
+
+// ── Maps ──────────────────────────────────────────────────────────────
+const DIAG_MAP={'lymph-upper':'лимфостаз верхних конечностей (постмастэктомический)','stiff-joint':'тугоподвижность суставов без лимфостаза','lymph-stiff':'лимфостаз + тугоподвижность','lymph-lower':'лимфостаз нижних конечностей'};
+const STAGE_MAP={'na':'нет/не применимо','1':'I (преходящий)','2':'II (стойкий)','3':'III (слоновость)'};
+const PER_MAP={'acute':'острый (до 3 мес.)','subacute':'подострый (3–12 мес.)','chronic':'хронический (>12 мес.)'};
+
+// ── Generate ──────────────────────────────────────────────────────────
+async function doGenerate(){
+  const btn=document.getElementById('gen-btn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner"></div> Формируем комплекс...';
+
+  const vd=getVB();
+  const diag=document.getElementById('cdiag').value;
+  const stage=document.getElementById('cstage').value;
+  const loc=document.getElementById('cloc').value;
+  const per=document.getElementById('cper').value;
+  const age=document.getElementById('cage').value;
+  const name=document.getElementById('cname').value;
+  const notes=document.getElementById('cnotes').value;
+  const equip=[...eqSet].join(', ')||'нет';
+  const contra=[...ctSet].join(', ')||'нет';
+
+  lastMeta={diag,stage,loc,per,age,name,equip,contra};
+
+  const mechanoBlock=eqSet.has('mechanotherapy')?`
+МЕХАНОТЕРАПИЯ ВЕРХНЕЙ КОНЕЧНОСТИ:
+- Блок механотерапии обязателен при: тугоподвижности плечевого сустава, ограничении ротации плеча по Visbody (<160°), постмастэктомическом синдроме.
+- Включи 3-4 позиции на блоковых/маятниковых тренажёрах: сгибание-разгибание в плечевом суставе, отведение, ротация (внутренняя/внешняя), упражнения на блоке для предплечья и кисти.
+- Указывай: тип тренажёра (маятниковый / блоковый / горизонтальный блок), вес отягощения (начальный 0.5–1 кг), амплитуду (% от максимальной), темп, количество серий.
+- Противопоказания механотерапии: острый болевой синдром >6/10, нестабильность сустава, острое воспаление, тромбоз.`:'';
+
+  const prompt=`Ты эксперт-реабилитолог, специализируешься на лимфостазе и тугоподвижности после онкологического лечения (постмастэктомический синдром, артрофиброз).
+
+ДАННЫЕ VISBODY:
+Вес: ${vd.weight??'н/д'} кг | ИМТ: ${vd.bmi??'н/д'} | BFP: ${vd.bfp??'н/д'}% | Мышцы: ${vd.muscle??'н/д'} кг
+Висц. жир: ${vd.visceral??'н/д'} | ECW/TBW: ${vd.ecw_tbw??'н/д'}
+Голова вперёд: ${vd.head_forward??'н/д'} см | Таз вперёд: ${vd.pelvis??'н/д'} см
+Асимметрия плеч: ${vd.shoulder_sym??'н/д'}° | Угол ноги: ${vd.leg_angle??'н/д'}°
+Ротация плеча лев/пр: ${vd.shoulder_rot_left??'н/д'}° / ${vd.shoulder_rot_right??'н/д'}°
+
+КЛИНИКА:
+Диагноз: ${DIAG_MAP[diag]||'не указан'} | Стадия: ${STAGE_MAP[stage]}
+Локализация: ${loc} | Период: ${PER_MAP[per]} | Возраст: ${age||'н/д'}
+Оборудование: ${equip}
+Противопоказания: ${contra}
+Доп. сведения: ${notes||'нет'}
+
+ПРОФИЛЬНАЯ ЛОГИКА:
+${diag==='lymph-upper'?'Постмастэктомический синдром: приоритет 1 — редукция отёка руки; приоритет 2 — восстановление объёма движений в плечевом суставе. Обязательна последовательность: лимфодренаж → ЛФК → механотерапия → физиотерапия. Учесть ограничение ротации плеча по Visbody.':''}
+${diag==='stiff-joint'?'Тугоподвижность без лимфостаза: главный акцент — мобилизация сустава, механотерапия для постепенного восстановления амплитуды, коррекция осанки и мышечного дисбаланса по данным Visbody.':''}
+${diag==='lymph-stiff'?'Комбинация: чёткая очерёдность — сначала редукция отёка (лимфодренаж), затем мобилизация. Механотерапию начинать только после уменьшения отёка. Контроль боли и объёма.':''}
+${mechanoBlock}
+Если ECW/TBW > 0.4 — акцентировать лимфодренажный компонент.
+
+Ответь СТРОГО JSON без markdown, без backticks:
+{"summary":"тактика 2-3 предложения","contraindications_alert":null,"lfc":[{"name":"","description":"","dose":"","frequency":"","rationale":""}],"mechanotherapy":[{"name":"","equipment":"тип тренажёра","technique":"","start_load":"начальная нагрузка/амплитуда","dose":"серии×повторения","frequency":"","notes":""}],"lymphdrain":[{"method":"","technique":"","duration":"","frequency":"","notes":""}],"physio":[{"method":"","params":"конкретные параметры аппарата","duration":"","course":"","zone":"","notes":""}],"schedule":"","monitoring":""}
+Требования: ЛФК ≥6 упражнений; механотерапия — только если есть в оборудовании (${equip}), ≥3 позиции с конкретными параметрами тренажёра; физиотерапия только из доступного оборудования (${equip}); при противопоказаниях (${contra}) строго исключить соответствующие методы.`;
+
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();
+    if(d.error) throw new Error(d.error.message);
+    const txt=d.content.map(i=>i.text||'').join('').replace(/```json|```/g,'').trim();
+    lastPlan=JSON.parse(txt);
+    renderResult(lastPlan);
+  }catch(e){
+    console.error(e);
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-sparkles"></i> Сформировать комплекс';
+    alert('Ошибка: '+e.message+'\n\nПроверьте заполнение полей.');
+  }
+}
+
+// ── Render result ─────────────────────────────────────────────────────
+function renderResult(plan){
+  document.getElementById('pg-input').style.display='none';
+  document.getElementById('pg-result').style.display='';
+  document.getElementById('back-btn').style.display='flex';
+
+  const {name,diag,per}=lastMeta;
+  document.getElementById('topbar-sub').textContent=(name?name+' · ':'')+( DIAG_MAP[diag]||'');
+
+  const sumEl=document.getElementById('r-summary');
+  if(plan.summary){ sumEl.textContent=plan.summary; sumEl.style.display=''; }
+  const dngEl=document.getElementById('danger-alert');
+  if(plan.contraindications_alert){ document.getElementById('danger-text').textContent=plan.contraindications_alert; dngEl.style.display='flex'; }
+  else dngEl.style.display='none';
+
+  let html='';
+
+  if(plan.lfc?.length){
+    html+=`<div class="rsec"><div class="rsec-header" style="color:var(--c-green)"><i class="ti ti-activity"></i>ЛФК</div>`;
+    plan.lfc.forEach(e=>{ html+=`<div class="ri lfc"><strong>${e.name}</strong><div class="desc">${e.description}</div><div class="meta"><span><i class="ti ti-repeat"></i>${e.dose}</span><span><i class="ti ti-calendar"></i>${e.frequency}</span></div>${e.rationale?`<div class="rat">${e.rationale}</div>`:''}</div>`; });
+    html+=`</div>`;
+  }
+
+  if(plan.mechanotherapy?.length){
+    html+=`<div class="rsec"><div class="rsec-header" style="color:var(--c-teal)"><i class="ti ti-settings-2"></i>Механотерапия верхней конечности</div>`;
+    plan.mechanotherapy.forEach(m=>{ html+=`<div class="ri mech"><strong>${m.name}</strong><div class="desc" style="margin-bottom:4px">${m.technique}</div><span class="params">${m.equipment}</span>${m.start_load?` <span class="params">${m.start_load}</span>`:''}<div class="meta"><span><i class="ti ti-repeat"></i>${m.dose}</span><span><i class="ti ti-calendar"></i>${m.frequency}</span></div>${m.notes?`<div class="rat">${m.notes}</div>`:''}</div>`; });
+    html+=`</div>`;
+  }
+
+  if(plan.lymphdrain?.length){
+    html+=`<div class="rsec"><div class="rsec-header" style="color:var(--c-blue-mid)"><i class="ti ti-droplet"></i>Лимфодренаж</div>`;
+    plan.lymphdrain.forEach(ld=>{ html+=`<div class="ri lymph"><strong>${ld.method}</strong><div class="desc">${ld.technique}</div><div class="meta"><span><i class="ti ti-clock"></i>${ld.duration}</span><span><i class="ti ti-calendar"></i>${ld.frequency}</span></div>${ld.notes?`<div class="rat">${ld.notes}</div>`:''}</div>`; });
+    html+=`</div>`;
+  }
+
+  if(plan.physio?.length){
+    html+=`<div class="rsec"><div class="rsec-header" style="color:var(--c-purple)"><i class="ti ti-bolt"></i>Физиотерапия</div>`;
+    plan.physio.forEach(p=>{ html+=`<div class="ri phys"><strong>${p.method}</strong><span class="params">${p.params}</span><div class="desc">${p.zone?'Зона: '+p.zone+'. ':''} ${p.notes||''}</div><div class="meta"><span><i class="ti ti-clock"></i>${p.duration}</span><span><i class="ti ti-list-numbers"></i>${p.course}</span></div></div>`; });
+    html+=`</div>`;
+  }
+
+  if(plan.schedule){
+    html+=`<div class="rsec"><div class="rsec-header"><i class="ti ti-calendar-week"></i>Недельный график</div><div class="sched-card">${plan.schedule}</div></div>`;
+  }
+  if(plan.monitoring){
+    html+=`<div class="rsec"><div class="rsec-header"><i class="ti ti-chart-line"></i>Мониторинг</div><div class="sched-card">${plan.monitoring}</div></div>`;
+  }
+
+  document.getElementById('r-body').innerHTML=html;
+  document.getElementById('gen-btn').disabled=false;
+  document.getElementById('gen-btn').innerHTML='<i class="ti ti-sparkles"></i> Сформировать комплекс';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goBack(){
+  document.getElementById('pg-input').style.display='';
+  document.getElementById('pg-result').style.display='none';
+  document.getElementById('back-btn').style.display='none';
+  document.getElementById('topbar-sub').textContent='Visbody → Комплекс реабилитации';
+}
+
+function doPrint(){ window.print(); }
+
+// ── Word export ───────────────────────────────────────────────────────
+async function doWord(){
+  if(!lastPlan){ alert('Сначала сформируйте комплекс.'); return; }
+  const btn=document.getElementById('word-btn');
+  btn.disabled=true; btn.innerHTML='<div class="spinner" style="border-top-color:var(--c-blue-mid);border-color:var(--c-border)"></div>';
+  try{
+    const {Document,Packer,Paragraph,TextRun,Table,TableRow,TableCell,HeadingLevel,BorderStyle,WidthType,ShadingType}=docx;
+    const {name,diag,per,age,stage,loc,contra,equip}=lastMeta;
+    const plan=lastPlan;
+    const date=new Date().toLocaleDateString('ru-RU');
+    const brd={style:BorderStyle.SINGLE,size:1,color:'CCCCCC'};
+    const borders={top:brd,bottom:brd,left:brd,right:brd};
+
+    function h(text,lvl,color){ return new Paragraph({heading:lvl||HeadingLevel.HEADING_2,spacing:{before:240,after:120},children:[new TextRun({text,bold:true,size:lvl===HeadingLevel.HEADING_1?32:26,color:color||'1A3C5E'})]}); }
+    function p(text,sz){ return new Paragraph({spacing:{after:80},children:[new TextRun({text:String(text||''),size:sz||22})]}); }
+    function pKV(k,v){ return new Paragraph({spacing:{after:60},children:[new TextRun({text:k+': ',bold:true,size:22}),new TextRun({text:String(v||'—'),size:22})]}); }
+
+    function makeTable(rows, headers){
+      const cw=Math.floor(9000/headers.length);
+      return new Table({
+        width:{size:9000,type:WidthType.DXA},
+        columnWidths:headers.map(()=>cw),
+        rows:[
+          new TableRow({children:headers.map(h=>new TableCell({borders,width:{size:cw,type:WidthType.DXA},shading:{fill:'D6EAF8',type:ShadingType.CLEAR},margins:{top:80,bottom:80,left:120,right:120},children:[new Paragraph({children:[new TextRun({text:h,bold:true,size:20,color:'1A3C5E'})]})]}))})
+          ,...rows.map(row=>new TableRow({children:row.map(cell=>new TableCell({borders,width:{size:cw,type:WidthType.DXA},margins:{top:80,bottom:80,left:120,right:120},children:[p(cell||'—',20)]}))}))
+        ]
+      });
+    }
+
+    const children=[
+      h('Реабилитационный комплекс',HeadingLevel.HEADING_1,'1A3C5E'),
+      p(DIAG_MAP[diag]||'—',20),
+      new Paragraph({spacing:{after:120}}),
+      pKV('Дата',date),
+      name?pKV('Пациентка',name):null,
+      age?pKV('Возраст',age+' лет'):null,
+      pKV('Период',PER_MAP[per]||'—'),
+      pKV('Стадия лимфостаза',STAGE_MAP[stage]||'—'),
+      pKV('Локализация',loc),
+      contra&&contra!=='нет'?pKV('Противопоказания',contra):null,
+      new Paragraph({spacing:{after:120}}),
+    ].filter(Boolean);
+
+    if(plan.contraindications_alert) children.push(new Paragraph({spacing:{after:100},children:[new TextRun({text:'⚠ Внимание: '+plan.contraindications_alert,bold:true,size:22,color:'C0392B'})]}));
+    if(plan.summary){ children.push(h('Тактика реабилитации')); children.push(p(plan.summary)); children.push(new Paragraph({spacing:{after:80}})); }
+
+    if(plan.lfc?.length){
+      children.push(h('ЛФК — лечебная физкультура',HeadingLevel.HEADING_2,'1D6A4A'));
+      children.push(makeTable(plan.lfc.map(e=>[e.name,e.description,e.dose,e.frequency]),['Упражнение','Техника','Дозировка','Частота']));
+      children.push(new Paragraph({spacing:{after:100}}));
+    }
+    if(plan.mechanotherapy?.length){
+      children.push(h('Механотерапия верхней конечности',HeadingLevel.HEADING_2,'0F6E56'));
+      children.push(makeTable(plan.mechanotherapy.map(m=>[m.name,m.equipment,m.technique,m.start_load,m.dose,m.frequency]),['Упражнение','Тренажёр','Техника','Нагрузка/амплитуда','Дозировка','Частота']));
+      children.push(new Paragraph({spacing:{after:100}}));
+    }
+    if(plan.lymphdrain?.length){
+      children.push(h('Лимфодренажные процедуры',HeadingLevel.HEADING_2,'185FA5'));
+      children.push(makeTable(plan.lymphdrain.map(l=>[l.method,l.technique,l.duration,l.frequency,l.notes]),['Метод','Техника','Длит.','Частота','Примечания']));
+      children.push(new Paragraph({spacing:{after:100}}));
+    }
+    if(plan.physio?.length){
+      children.push(h('Физиотерапия',HeadingLevel.HEADING_2,'534AB7'));
+      children.push(makeTable(plan.physio.map(ph=>[ph.method,ph.params,ph.zone,ph.duration,ph.course,ph.notes]),['Метод','Параметры','Зона','Сеанс','Курс','Примечания']));
+      children.push(new Paragraph({spacing:{after:100}}));
+    }
+    if(plan.schedule){ children.push(h('Недельный график')); children.push(p(plan.schedule)); children.push(new Paragraph({spacing:{after:80}})); }
+    if(plan.monitoring){ children.push(h('Мониторинг и критерии эффективности')); children.push(p(plan.monitoring)); children.push(new Paragraph({spacing:{after:80}})); }
+
+    children.push(new Paragraph({spacing:{before:400},children:[new TextRun({text:'Врач-реабилитолог: _________________________________  Дата: '+date,size:22})]}));
+    children.push(p('Комплекс носит рекомендательный характер и подлежит контролю специалиста.',18));
+
+    const doc=new Document({
+      styles:{default:{document:{run:{font:'Arial',size:22}}}},
+      sections:[{properties:{page:{size:{width:11906,height:16838},margin:{top:1134,bottom:1134,left:1134,right:1134}}},children}]
+    });
+    const blob=await Packer.toBlob(doc);
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const fname=(name?name.replace(/[\s.]/g,'_')+'_':'')+'rehab_'+date.replace(/\./g,'-')+'.docx';
+    a.href=url; a.download=fname; a.click();
+    URL.revokeObjectURL(url);
+  }catch(err){ console.error(err); alert('Ошибка Word: '+err.message); }
+  btn.disabled=false; btn.innerHTML='<i class="ti ti-file-word"></i> Скачать Word';
+}
+</script>
+<script>if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");</script>
+</body>
+</html>
